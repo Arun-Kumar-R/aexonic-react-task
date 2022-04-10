@@ -1,19 +1,24 @@
 import { Divider } from '@material-ui/core';
 import { FC } from 'react';
-import { getItems } from '../../util/helpers';
-import { useStyles } from './styles';
 import RupeeIcon from '@mui/icons-material/CurrencyRupeeOutlined';
+
+import { useStyles } from './styles';
+import { CartState } from '../../context/context';
+import { ItemTypes } from '../../types/types';
 
 const SummaryTable: FC = () => {
   const classes = useStyles();
-  const cartItems = getItems();
+
+  const {
+    state: { cart }
+  } = CartState();
 
   const TaxAmount = 10;
   const ShippingCharge = 'Free';
 
   const handleSubTotalPrice = () => {
     let total = 0;
-    cartItems.map((item: any) => {
+    cart.map((item: ItemTypes) => {
       total += item.price;
     });
     return total;
@@ -23,16 +28,11 @@ const SummaryTable: FC = () => {
     let total = handleSubTotalPrice() + TaxAmount;
     if (total >= 101 && total <= 500) {
       let discountAmount = (total * 10) / 100;
-      console.log(discountAmount);
       total -= discountAmount;
-      console.log(total);
     } else if (total > 500) {
       let discountAmount = (total * 20) / 100;
-      console.log(discountAmount);
       total -= discountAmount;
-      console.log(total);
     }
-    console.log(total);
     return total;
   };
 
@@ -71,9 +71,6 @@ const SummaryTable: FC = () => {
             </p>
           </div>
         </div>
-        {/* <Button variant="contained" disabled className={classes.CheckoutBtn}>
-          Proceed to Pay
-        </Button> */}
       </div>
     </>
   );

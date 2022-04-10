@@ -1,9 +1,9 @@
-import './App.scss';
-import Header from './components/header/header';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import MenuList from './screens/menu/menuList';
 import CartPage from './screens/cart/cart';
+import './App.scss';
+import Header from './components/header/header';
 
 function App() {
   return (

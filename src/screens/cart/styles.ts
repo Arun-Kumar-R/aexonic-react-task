@@ -13,6 +13,20 @@ export const useStyles = makeStyles((theme: Theme) =>
         alignItems: 'center'
       }
     },
+    noItemFound: {
+      textAlign: 'center',
+      color: 'red',
+      marginTop: '50px',
+      fontWeight: 500,
+      fontSize: '1.6rem'
+    },
+    EmptyWrapper: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: '80px',
+      flexDirection: 'column'
+    },
     CartList: {
       width: '55%',
       [theme.breakpoints.between(660, 940)]: {
@@ -37,6 +51,15 @@ export const useStyles = makeStyles((theme: Theme) =>
         width: '100%',
         marginBottom: '30px'
       }
+    },
+    MenuLink: {
+      padding: '0px 15px',
+      fontSize: '1rem',
+      letterSpacing: '0.5px',
+      textTransform: 'uppercase',
+      textDecoration: 'none',
+      color: '#60b246',
+      marginTop: '20px'
     },
     cartHeader: {
       marginTop: '120px',

@@ -53,8 +53,6 @@ export const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: '#ebebeb'
       }
     },
-    CartGrid: {},
-    CartItem: {},
     ButtonWrapper: {
       display: 'flex',
       justifyContent: 'center',

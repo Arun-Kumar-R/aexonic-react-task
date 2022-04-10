@@ -11,7 +11,8 @@ export const useStyles = makeStyles((theme: Theme) =>
       padding: '20px',
       [theme.breakpoints.down(660)]: {
         alignItems: 'center',
-        height: '150px'
+        height: '150px',
+        justifyContent: 'space-between'
       }
     },
     ItemContent: {
@@ -53,7 +54,6 @@ export const useStyles = makeStyles((theme: Theme) =>
         display: 'none'
       }
     },
-
     ItemImageWrapper: {},
     ItemImage: {
       width: '120px'

@@ -1,68 +1,67 @@
-import { FC, useEffect, useState } from 'react';
-import { useStyles } from './styles';
-import ItemImage from '../../assets/Images/item.jpeg';
-import VegIcon from '../../assets/Images/veg.png';
+import { FC } from 'react';
 import { Button, Divider } from '@material-ui/core';
-import { ItemTypes } from '../../types/types';
 import RupeeIcon from '@mui/icons-material/CurrencyRupeeOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { CART_ITEMS } from '../../config/config';
-import { getItems } from '../../util/helpers';
+
+import { useStyles } from './styles';
+import ItemImage from '../../assets/Images/item.jpeg';
+import VegIcon from '../../assets/Images/veg.png';
+import { ItemTypes } from '../../types/types';
+import { CartState } from '../../context/context';
 
 const MenuItem: FC<{ item: ItemTypes }> = ({ item }) => {
   const classes = useStyles();
-  const [itemAdded, setItemAdded] = useState<boolean>(false);
-  let cartItems = getItems();
+
+  const {
+    state: { cart },
+    dispatch
+  } = CartState();
 
   const handleAddToCart = () => {
-    let productsString = localStorage.getItem(CART_ITEMS);
-    console.log(productsString);
-    let products = [];
-    if (productsString) {
-      products = JSON.parse(productsString);
-    }
-    products.push({ id: item.id, item_name: item.item_name, price: item.price, quantity: 1 });
-    localStorage.setItem(CART_ITEMS, JSON.stringify(products));
+    dispatch({
+      type: 'ADD_TO_CART',
+      payload: item
+    });
   };
 
-  const handleAdded = () => {
-    return (
-      cartItems?.length > 0 &&
-      cartItems.map((cart: any) => {
-        if (cart.id === item.id && cart.quantity > 0) {
-          setItemAdded(true);
-        }
-      })
-    );
-  };
+  let quantity = 0;
+  let id = 0;
+
+  cart?.filter((q: ItemTypes) => {
+    return q.id === item.id ? ((quantity = q.qty), (id = q.id)) : 0;
+  });
 
   const handleDecrease = () => {
-    const oldItems = JSON.parse(localStorage.getItem(CART_ITEMS)!);
-    oldItems.map((p: any) =>
-      p.id === item.id
-        ? localStorage.setItem(CART_ITEMS, JSON.stringify({ ...oldItems, quantity: p.quantity-- }))
-        : p
-    );
+    item.qty = 1;
+    if (quantity < 1) {
+      dispatch({
+        type: 'REMOVE_FROM_CART',
+        payload: id
+      });
+    } else {
+      dispatch({
+        type: 'UPDATE_ITEM_QUANTITY',
+        payload: {
+          id: item.id,
+          qty: quantity - 1,
+          price: item.price
+        }
+      });
+    }
   };
 
   const handleIncrease = () => {
-    // cartItems.map((p: any) =>
-    //   p.id === item.id
-    //     ? localStorage.setItem(CART_ITEMS, JSON.stringify({ ...p, quantity: p.quantity++ }))
-    //     : p
-    // );
-    const oldItems = JSON.parse(localStorage.getItem(CART_ITEMS)!);
-    oldItems.map((p: any) =>
-      p.id === item.id
-        ? localStorage.setItem(CART_ITEMS, JSON.stringify({ ...p, quantity: p.quantity++ }))
-        : p
-    );
+    item.qty = 1;
+    dispatch({
+      type: 'UPDATE_ITEM_QUANTITY',
+      payload: {
+        id: item.id,
+        qty: quantity + 1,
+        price: item.price
+      }
+    });
   };
-
-  useEffect(() => {
-    if (cartItems) handleAdded();
-  }, [itemAdded]);
 
   return (
     <>
@@ -80,13 +79,13 @@ const MenuItem: FC<{ item: ItemTypes }> = ({ item }) => {
         </div>
         <div className={classes.ItemImageWrapper}>
           <img src={ItemImage} alt="item" className={classes.ItemImage} />
-          {itemAdded && cartItems ? (
+          {quantity > 0 ? (
             <div className={classes.ButtonWrapper}>
               <button className={classes.BtnDecrease} onClick={handleDecrease}>
                 <RemoveIcon className={classes.BtnIconMinus} />
               </button>
               <p className={classes.ItemCount}>
-                <span>{item.quantity || 1}</span>
+                <span>{quantity}</span>
               </p>
               <button className={classes.BtnIncrease} onClick={handleIncrease}>
                 <AddIcon className={classes.BtnIconAdd} />

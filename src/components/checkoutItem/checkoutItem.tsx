@@ -1,29 +1,66 @@
 import { FC } from 'react';
+import { Button, Divider } from '@material-ui/core';
+import RupeeIcon from '@mui/icons-material/CurrencyRupeeOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+
 import { useStyles } from './styles';
 import ItemImage from '../../assets/Images/item.jpeg';
 import VegIcon from '../../assets/Images/veg.png';
-import { Button, Divider } from '@material-ui/core';
 import { ItemTypes } from '../../types/types';
-import RupeeIcon from '@mui/icons-material/CurrencyRupeeOutlined';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { getItems } from '../../util/helpers';
-import { CART_ITEMS } from '../../config/config';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import { CartState } from '../../context/context';
 
 const CheckoutItem: FC<{ item: ItemTypes }> = ({ item }) => {
   const classes = useStyles();
 
+  const {
+    state: { cart },
+    dispatch
+  } = CartState();
+
+  let quantity = 0;
+
+  cart?.filter((q: ItemTypes) => {
+    return q.id === item.id ? (quantity = q.qty) : 0;
+  });
+
+  const handleDecrease = () => {
+    item.qty = 1;
+    if (quantity < 1) {
+      dispatch({
+        type: 'REMOVE_FROM_CART',
+        payload: item.id
+      });
+    } else {
+      dispatch({
+        type: 'UPDATE_ITEM_QUANTITY',
+        payload: {
+          id: item.id,
+          qty: quantity - 1,
+          price: item.price
+        }
+      });
+    }
+  };
+
+  const handleIncrease = () => {
+    item.qty = 1;
+    dispatch({
+      type: 'UPDATE_ITEM_QUANTITY',
+      payload: {
+        id: item.id,
+        qty: quantity + 1,
+        price: item.price
+      }
+    });
+  };
+
   const handleRemoveItem = () => {
-    const cartItems = getItems();
-
-    const itemToBeRemoved = item;
-
-    const findIndex = cartItems.findIndex((a: any) => a.id === itemToBeRemoved.id);
-
-    findIndex !== -1 && cartItems.splice(findIndex, 1);
-
-    localStorage.setItem(CART_ITEMS, JSON.stringify(cartItems));
+    dispatch({
+      type: 'REMOVE_FROM_CART',
+      payload: item
+    });
   };
 
   return (
@@ -40,14 +77,14 @@ const CheckoutItem: FC<{ item: ItemTypes }> = ({ item }) => {
               {item.item_name ?? '-'}
             </h3>
             <div className={classes.ButtonWrapper}>
-              <button className={classes.BtnDecrease}>
+              <button className={classes.BtnDecrease} onClick={handleDecrease}>
                 {' '}
                 <RemoveIcon className={classes.BtnIconMinus} />
               </button>
               <p className={classes.ItemCount}>
-                <span>{item.quantity}</span>
+                <span>{item.qty}</span>
               </p>
-              <button className={classes.BtnIncrease}>
+              <button className={classes.BtnIncrease} onClick={handleIncrease}>
                 {' '}
                 <AddIcon className={classes.BtnIconAdd} />
               </button>

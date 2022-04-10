@@ -1,46 +1,61 @@
-import { Button, Container } from '@material-ui/core';
 import { FC } from 'react';
+import ClearIcon from '@mui/icons-material/Clear';
+import { Button, Container } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+
 import CheckoutItem from '../../components/checkoutItem/checkoutItem';
 import SummaryTable from '../../components/summaryTable/summaryTable';
-import { getItems } from '../../util/helpers';
 import { useStyles } from './styles';
-import EmptyCartImage from '../../assets/Images/empty-cart.png';
-import { CART_ITEMS } from '../../config/config';
-import ClearIcon from '@mui/icons-material/Clear';
+import { CartState } from '../../context/context';
 
 const CartPage: FC = () => {
   const classes = useStyles();
-  const cartItems = getItems();
+
+  const {
+    state: { cart },
+    dispatch
+  } = CartState();
 
   const handleClearCart = () => {
-    return localStorage.removeItem(CART_ITEMS);
+    dispatch({
+      type: 'CLEAR_CART',
+      payload: []
+    });
   };
 
   return (
-    <Container>
-      <div className={classes.cartHeader}>
-        <h2>Items in your cart</h2>
-        {cartItems?.length > 0 && (
-          <Button
-            variant="outlined"
-            startIcon={<ClearIcon className={classes.ClearIcon} />}
-            onClick={handleClearCart}>
-            Clear
-          </Button>
-        )}
-      </div>
+    <>
+      {cart?.length > 0 ? (
+        <Container>
+          <div className={classes.cartHeader}>
+            <h2>Items in your cart</h2>
+            {cart?.length > 0 && (
+              <Button
+                variant="outlined"
+                startIcon={<ClearIcon className={classes.ClearIcon} />}
+                onClick={handleClearCart}>
+                Clear
+              </Button>
+            )}
+          </div>
 
-      <div className={classes.CartPageWrapper}>
-        <div className={cartItems?.length > 0 ? classes.CartList : classes.EmptyCartImage}>
-          {cartItems?.length > 0 ? (
-            cartItems.map((item: any, index: number) => <CheckoutItem item={item} key={index} />)
-          ) : (
-            <img src={EmptyCartImage} alt="empty-cart" />
-          )}
+          <div className={classes.CartPageWrapper}>
+            <div className={cart?.length > 0 ? classes.CartList : classes.EmptyCartImage}>
+              {cart?.length > 0 &&
+                cart.map((item: any, index: number) => <CheckoutItem item={item} key={index} />)}
+            </div>
+            <SummaryTable />
+          </div>
+        </Container>
+      ) : (
+        <div className={classes.EmptyWrapper}>
+          <h2 className={classes.noItemFound}>No items found in your cart</h2>
+          <Link to="/" className={classes.MenuLink}>
+            Go To Menu Page
+          </Link>
         </div>
-        <SummaryTable />
-      </div>
-    </Container>
+      )}
+    </>
   );
 };
 

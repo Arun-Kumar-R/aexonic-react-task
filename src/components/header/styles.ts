@@ -17,7 +17,15 @@ export const useStyles = makeStyles(() =>
       justifyContent: 'space-between',
       alignItems: 'center'
     },
-    BrandLogo: {},
+    BrandLogo: {
+      fontSize: '24px',
+      fontWeight: 500,
+      textDecoration: 'none',
+      color: '#60b246'
+    },
+    cartBtn: {
+      paddingRight: '5px !important'
+    },
     active: {
       color: '#60b246 !important'
     },
